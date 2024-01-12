@@ -1,23 +1,28 @@
 from flask import Flask, request, jsonify
-from pyngrok import ngrok
 
 app = Flask(__name__)
 
-@app.route('/api/get-success', methods=['GET'])
+@app.route('/api/get_success', methods=['GET'])
 def get_success():
+    # Get first name and last name from query parameters
     first_name = request.args.get('first_name')
     last_name = request.args.get('last_name')
 
+    # Check if both first name and last name are provided
     if first_name and last_name:
-        success_message = f"Hello, {first_name} {last_name}! Success!"
-        return jsonify({"status": "success", "message": success_message})
+        # Success response
+        response = {
+            'status': 'success',
+            'message': f'Hello, {first_name} {last_name}! Success!'
+        }
+        return jsonify(response), 200, {'Content-Type': 'application/json'}
     else:
-        return jsonify({"status": "error", "message": "Please provide both first_name and last_name parameters."})
+        # Error response if either first name or last name is missing
+        response = {
+            'status': 'error',
+            'message': 'Both first name and last name are required.'
+        }
+        return jsonify(response), 400, {'Content-Type': 'application/json'}
 
 if __name__ == '__main__':
-    # Start Ngrok when the app is run
-    public_url = ngrok.connect(5000)
-    print(" * ngrok tunnel \"{}\" -> \"http://127.0.0.1:5000\"".format(public_url))
-
-    # Start the Flask app
-    app.run(port=5000)
+    app.run(debug=True)
